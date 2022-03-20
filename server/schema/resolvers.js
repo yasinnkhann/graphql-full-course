@@ -1,10 +1,11 @@
-const { UserList, MovieList } = require("../FakeData");
-const _ = require("lodash");
+const { UserList, MovieList } = require('../FakeData');
+const _ = require('lodash');
 
 const resolvers = {
   Query: {
     // USER RESOLVERS
-    users: () => {
+    users: (parent, args, context, info) => {
+      console.log(context.req);
       return UserList;
     },
     user: (parent, args) => {
@@ -27,7 +28,7 @@ const resolvers = {
     favoriteMovies: () => {
       return _.filter(
         MovieList,
-        (movie) =>
+        movie =>
           movie.yearOfPublication >= 2000 && movie.yearOfPublication <= 2010
       );
     },
@@ -45,7 +46,7 @@ const resolvers = {
     updateUsername: (parent, args) => {
       const { id, newUsername } = args.input;
       let userUpdated;
-      UserList.forEach((user) => {
+      UserList.forEach(user => {
         if (user.id === Number(id)) {
           user.username = newUsername;
           userUpdated = user;
@@ -57,7 +58,7 @@ const resolvers = {
 
     deleteUser: (parent, args) => {
       const id = args.id;
-      _.remove(UserList, (user) => user.id === Number(id));
+      _.remove(UserList, user => user.id === Number(id));
       return null;
     },
   },
