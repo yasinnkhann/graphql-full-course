@@ -5,7 +5,7 @@ const resolvers = {
   Query: {
     // USER RESOLVERS
     users: (parent, args, context, info) => {
-      console.log(context.req);
+      // console.log(context.req);
       return UserList;
     },
     user: (parent, args) => {
