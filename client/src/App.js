@@ -7,16 +7,22 @@ import {
 	from,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
+import { relayStylePagination } from '@apollo/client/utilities';
 import DisplayData from './DisplayData';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-	if (graphQLErrors)
+	if (graphQLErrors) {
 		graphQLErrors.forEach(err => {
 			const { locations, message, path } = err;
 			console.warn(
-				`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+				`[GraphQL error]:\nMessage: ${message}, Locations: ${locations}, Path: ${path}`
 			);
 		});
+	}
+
+	if (networkError) {
+		console.warn(`[Network Error]:\n${networkError}`);
+	}
 });
 
 const link = from([
@@ -24,9 +30,17 @@ const link = from([
 	new HttpLink({ uri: 'http://localhost:4000/graphql' }),
 ]);
 
-const client = new ApolloClient({
-	cache: new InMemoryCache(),
-	link: link,
+export const client = new ApolloClient({
+	cache: new InMemoryCache({
+		typePolicies: {
+			Query: {
+				fields: {
+					links: relayStylePagination(),
+				},
+			},
+		},
+	}),
+	link,
 });
 
 function App() {
